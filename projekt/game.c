@@ -3,17 +3,17 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-char map_start[4][18] = { {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ','t'}
-						, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ','t'}
-						, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ','t'}
-						, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','t'}};//the map at start
-																									 //of the game
+const char map_start[4][18] = {   {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ','t'}
+								, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ','t'}
+								, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ','t'}	//written by Erik
+								, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ','t'}};//the map at start
+																									 		//of the game
 char map[4][18]; //the map
 
 
 char lost[4][16] = 		{ {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}
 						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}
-						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}
+						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}	//written by Jonathan
 						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}};//you lost screen
 
 
@@ -21,7 +21,6 @@ char lost[4][16] = 		{ {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',
 int alive = 1;//gamestate counter
 
 int timeoutcount = 0;//global variable to handle timer2
-int timeoutcount2 = 0;//global variable to handle timer3
 
 
 void user_isr( void ) {//this method is the taken from lab 3
@@ -29,8 +28,8 @@ void user_isr( void ) {//this method is the taken from lab 3
 	int k;						//int used in for loop
 	int l;						//int used in for loop
 
-	for(k = 0; k<17; k++){				//prints the start map onto
-		for(l = 0; l<4; l++){			//the map that will be modified
+	for(k = 0; k<17; k++){				//prints the start map onto 
+		for(l = 0; l<4; l++){			//the map that will be modified		written by Erik
 			map[l][k] = map_start[l][k];//during the game
 		}
 	}
@@ -41,18 +40,18 @@ void user_isr( void ) {//this method is the taken from lab 3
 	int i;						//int used in for loop
 	int j;						//int used in for loop
 
-	int player_location = 1;//current location of the player
+	int player_location = 1;//current location of the player written by Erik
 
 
-/*													BELOW IS DEAD LOGIC															*/
+/*											BELOW IS DEAD LOGIC	WRITTEN BY ERIK												*/
 
 
-if(IFS(0) & 0x1000){//increments timeoutcount2 by 1 every interupt in timer3
+if(IFS(0) & 0x100){//increments timeoutcount by 1 every interupt in timer
 			IFS(0) = 0;
-			timeoutcount2++;
+			timeoutcount++;
 		}
 
-if (timeoutcount2 == 10 ){
+if (timeoutcount == 1 ){
 		while(alive == 0 && button == 1){
 			for(k = 0; k<17; k++){			//these 2 for loops resets the map
 				for(l = 0; l<4; l++){		//to the starting map
@@ -64,7 +63,7 @@ if (timeoutcount2 == 10 ){
 
 
 			IFS(0) = 0;						//resets interrupt flag
-			timeoutcount2 = 0;				//resets timeoutcount2
+			timeoutcount = 0;				//resets timeoutcount
 			alive = 1;						//turns the game on by reviving player
 
 			map[player_location][1] = 'x';//prints the player onto the screen
@@ -76,9 +75,10 @@ if (timeoutcount2 == 10 ){
 			display_update();//update the display
 	}
 }
-else if(timeoutcount2 > 10){
-	timeoutcount2 = 0;//if one second has passed and the reset button
-}					  //has not been pressed reset timeoutcount2
+else if(timeoutcount > 1){
+	timeoutcount = 0;//if one second has passed and the reset button
+	IFS(0) = 0;		//has not been pressed reset timeoutcount
+}					
 else{
 	IFS(0) = 0;//resets interrupt flag
 }
@@ -86,16 +86,16 @@ else{
 
 /*														DEAD LOGIC END															*/
 
-/*												BELOW IS PLAYER ALIVE LOGIC														*/
+/*										BELOW IS PLAYER ALIVE LOGIC	WRITTEN BY JONATHAN											*/
 
 
 	while (alive == 1){//checks if the the game is active
-		if(IFS(0) & 0x100){//increments timeoutcount by 1 every interupt in timer2
+		if(IFS(0) & 0x100){//increments timeoutcount by 1 every interupt in timer
 			IFS(0) = 0;
 			timeoutcount++;
 		}
 
-		if(timeoutcount == 10){//timer for how fast the map moves, same solutions as in lab3
+		if(timeoutcount == 5){//timer for how fast the map moves, same solutions as in lab3
 			int btns = getbtns();
 
 			for(i = 0; i < 17; i++){//scrolls through columns 0-17
@@ -126,28 +126,32 @@ else{
 				player_location = player_location - 1;//they are moved up one row
 			}
 
+			
 
 			if(map[player_location][1] == structure){//checks if the player will be on a structure
 													 //if so the game is killed
-			display_update();						
+									
 			display_string(0, lost[0]);				//displays the lose screen
 			display_string(1, lost[1]);
 			display_string(2, lost[2]);
 			display_string(3, lost[3]);
-			
-
+			display_update();
+		
 			alive = 0;
+			timeoutcount = 0;
 			}
 
 			map[player_location][1] = 'x';//prints the player onto the screen
 
 
-			display_update();//update the display
+
 			display_string(0, map[0]);//displays the first row of the map onto the first row from the display_string function
 			display_string(1, map[1]);//displays the second row of the map onto the second row from the display_string function
 			display_string(2, map[2]);//displays the third row of the map onto the third row from the display_string function
 			display_string(3, map[3]);//displays the fourth row of the map onto the fourth row from the display_string function
 									  // both display_string and display_update is used from the labs
+
+			display_update();//update the display
 
 			PORTE++;//increments the score
 			IFS(0) = 0;//resets flag counter in timer
@@ -161,10 +165,10 @@ else{
 
 
 void labinit (void){//labinit is from lab3; intialisations for buttons, timers and LEDS 
-	volatile int* trise = 0xbf886100;	//initializes the leds vår eller laben??
-  	volatile int* porte = 0xbf886110;	//initializes the leds ------- 
-  	(*trise) = 0XFF00;					//initializes the leds -------
-  	TRISD = 0xFFE0;						//initializes the buttons??? -------
+	volatile int* trise = 0xbf886100;	//initializes the leds our solution from lab3
+  	volatile int* porte = 0xbf886110;	//initializes the leds our solution from lab3
+  	(*trise) = 0XFF00;					//initializes the leds our solution from lab3
+  	TRISD = 0xFFE0;						//initializes the buttons
 
 	
 	//everything below is our solution to lab3 except enable_interrupt() which is taken from the instruction in the same lab
@@ -173,22 +177,12 @@ void labinit (void){//labinit is from lab3; intialisations for buttons, timers a
 	TMR2 = 0;				//16bit counter
 	PR2 = (80000000/10)/256;//period register
 	T2CONSET = 0x8000;		//turn on timer2
-	//end setup for timer2
-
-	//setup for timer3
-	T3CON = 0x0;			//zeroes timer3 control
-	T3CONSET = 0x70;		//initialize timer3 256 scaling
-	TMR3 = 0;				//16bit counter
-	PR3 = (80000000/10)/256;//period register
-	T3CONSET = 0x8000;		//turn on timer3
-	//end setup for timer3
+	//end setup for timer
 
 
-	IEC(0) |= 0x100;		//enables interrupts for the timer?
+	IEC(0) |= 0x100;		//enables interrupts for the timer
   	IPC(2) |= 0x1D;			//sets priority for the timer
 
-	IEC(0) |= 0x1000;
-	IPC(3) |= 0x1C;
 	enable_interrupt();		//enable interrupts globally
 
 	return;
@@ -196,4 +190,3 @@ void labinit (void){//labinit is from lab3; intialisations for buttons, timers a
 void labwork (void){//taken from the labs -- allows the game to run continously
 
 }
-
