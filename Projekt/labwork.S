@@ -19,15 +19,15 @@
   #
   # Please add your own code below this line
   #
-  .global hexasc, delay, time2string, enable_interrupt
+  .global hexasc, delay, time2string, enable_interrupt #written together during lab3
 .text
   #
 
-  enable_interrupt:
+  enable_interrupt: #written together during lab3
 	ei
 	jr		$ra
   
- hexasc: 
+ hexasc: #written together during lab1
 	andi	$a0,$a0,0xF
 	
 	addi	$v0,$a0,0x30
@@ -40,7 +40,7 @@
 	
 	letters:
 		addi	$v0,$v0,7
-delay:
+delay: #written together during lab1
   
  	bgt  $a0, $0, while_loop
  	nop
@@ -68,7 +68,7 @@ delay:
   	
   	
 
-time2string:
+time2string: #written together during lab1
 	
 	PUSH 	"$s0"
 	PUSH	"$s1"

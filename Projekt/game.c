@@ -3,18 +3,18 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-const char map_start[4][18] = {   {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ','t'}
-								, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ','t'}
-								, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ','t'}	//written by Erik
-								, {' ',' ',' ',' ',' ','@',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ','t'}};//the map at start
-																									 		//of the game
-char map[4][18]; //the map
+const char map_start[4][25] = {   {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ','@','t'}
+                                , {' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ','@','t'}
+                                , {' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ','t'}    	//written by Erik
+                                , {' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ','@',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','@','t'}};	//the map at start	
+																																			//of the game
+char map[4][25]; //the map
 
 
-char lost[4][16] = 		{ {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}
-						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}
-						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}	//written by Jonathan
-						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' ',' ','t'}};//you lost screen
+char lost[4][16] = 		{ {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' '}
+						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' '}
+						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' '}	//written by Jonathan
+						, {' ',' ',' ','Y','O','U',' ','L','O','S','T','!',' ',' ',' ',' '}};//you lost screen
 
 
 
@@ -28,7 +28,7 @@ void user_isr( void ) {//this method is the taken from lab 3
 	int k;						//int used in for loop
 	int l;						//int used in for loop
 
-	for(k = 0; k<17; k++){				//prints the start map onto 
+	for(k = 0; k<24; k++){				//prints the start map onto 
 		for(l = 0; l<4; l++){			//the map that will be modified		written by Erik
 			map[l][k] = map_start[l][k];//during the game
 		}
@@ -53,7 +53,7 @@ if(IFS(0) & 0x100){//increments timeoutcount by 1 every interupt in timer
 
 if (timeoutcount == 1 ){
 		while(alive == 0 && button == 1){
-			for(k = 0; k<17; k++){			//these 2 for loops resets the map
+			for(k = 0; k<24; k++){			//these 2 for loops resets the map
 				for(l = 0; l<4; l++){		//to the starting map
 					map[l][k] = map_start[l][k];
 				}
@@ -98,13 +98,13 @@ else{
 		if(timeoutcount == 5){//timer for how fast the map moves, same solutions as in lab3
 			int btns = getbtns();
 
-			for(i = 0; i < 17; i++){//scrolls through columns 0-17
+			for(i = 0; i < 24; i++){//scrolls through columns 0-17
 
 				if(i == 0){
-					map[0][17] = map[0][0];//copies the char in the first place in row 1 to the last place
-					map[1][17] = map[1][0];//copies the char in the first place in row 2 to the last place
-					map[2][17] = map[2][0];//copies the char in the first place in row 3 to the last place
-					map[3][17] = map[3][0];//copies the char in the first place in row 4 to the last place
+					map[0][24] = map[0][0];//copies the char in the first place in row 1 to the last place
+					map[1][24] = map[1][0];//copies the char in the first place in row 2 to the last place
+					map[2][24] = map[2][0];//copies the char in the first place in row 3 to the last place
+					map[3][24] = map[3][0];//copies the char in the first place in row 4 to the last place
 				}
 
 				for(j = 0; j < 4; j++){
@@ -112,7 +112,7 @@ else{
 						map[j][i] = map[j][i+1];				//moves the map one step to the left
 					}											//except for the char behind the player									
 					else if(j == player_location && i == 0){
-						map[j][17] = map[j][i];					//if we're on the char behind the player
+						map[j][24] = map[j][i];					//if we're on the char behind the player
 						map[j][i] = ' ';						//store its char in the last place on its row
 					}											//and set it to ' '
 				}												
@@ -130,18 +130,19 @@ else{
 
 			if(map[player_location][1] == structure){//checks if the player will be on a structure
 													 //if so the game is killed
-			
+			display_update();
 			display_string(0, lost[0]);				//displays the lose screen
 			display_string(1, lost[1]);
 			display_string(2, lost[2]);
 			display_string(3, lost[3]);
 			display_update();
 			
+			
 		
 			alive = 0;
 			timeoutcount = 0;
 			}
-			
+			else{
 			map[player_location][1] = 'x';//prints the player onto the screen
 
 		 	 //update the display
@@ -150,7 +151,7 @@ else{
 			display_string(2, map[2]);//displays the third row of the map onto the third row from the display_string function
 			display_string(3, map[3]);//displays the fourth row of the map onto the fourth row from the display_string function
 			display_update();		  // both display_string and display_update is used from the labs
-
+			}
 
 			PORTE++;//increments the score
 			IFS(0) = 0;//resets flag counter in timer

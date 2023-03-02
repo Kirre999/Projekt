@@ -1,5 +1,5 @@
 Written by Erik Pagès Svärd & Jonathan Nilsson Cullgert
-in game.c time4io.c, and labwork.S
+in game.c time4io.c, and labwork.S. We also slightly modified miplabmain.c
 
 The files mipslabmain.c, mibslabfunc.c, vectors.S, stubs.c, labwork.S and mipslab.h 
 were written by Axel Isaksson and F. Lundevall
