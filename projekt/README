@@ -7,7 +7,7 @@ Type "make" in order to compile, and then "make install" in order to run the gam
 In some cases, you have to find out the name of your USB port, then issue the command "make install TTYDEV=(USB port name)"
 
 HOW TO PLAY:
-Steer the dolphin by pressing button 1, (BNT1), in order to make it dive down since it will automaticly float upwards by time goes on.
+Steer the dolphin by pressing button 4, (BNT4), in order to make it dive down since it will automaticly float upwards by time goes on.
 Avoid obstacles coming towards the dolphin by steering. If you hit an obstacle, you lose.
-When you lose press button 3, (BTN3), to restart the game.
+When you lose press button 2, (BTN2), to restart the game.
 The LEDs on the chipKIT basic I/O keeps track of your score.
